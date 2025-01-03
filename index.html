@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360 Video VR View with Start/Stop</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            height: 100%;
+        }
+        a-scene {
+            width: 100%;
+            height: 100vh;
+        }
+        /* Larger VR Button */
+        .vr-toggle-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 15px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 1000;
+            width: auto;
+        }
+        .vr-toggle-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Video Start/Stop Button */
+        .video-toggle-btn {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            padding: 15px 25px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 1000;
+            width: auto;
+        }
+        .video-toggle-btn:hover {
+            background-color: #218838;
+        }
+
+        /* VR Mode Message */
+        .vr-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 20px;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            width: 80%;
+            white-space: nowrap;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .vr-toggle-btn,
+            .video-toggle-btn {
+                font-size: 16px;
+                padding: 12px 20px;
+                left: 10px;
+            }
+
+            .vr-message {
+                font-size: 18px;
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- A-Frame Scene for VR -->
+<a-scene embedded id="vr-scene">
+    <!-- Video as Sky (360-degree view) -->
+    <a-assets>
+        <video id="my-video" src="22.mp4" autoplay="true" loop="true" crossorigin="anonymous" preload="auto"></video>
+    </a-assets>
+    
+    <!-- 360° Video as the Sky Texture -->
+    <a-sky src="#my-video" rotation="0 -90 0"></a-sky>
+
+    <!-- Camera entity with controls for mouse and keyboard interaction -->
+    <a-entity camera 
+              look-controls="pointerLockEnabled: true; mouseEnabled: true"
+              wasd-controls="enabled: true; acceleration: 150; fly: true">
+    </a-entity>
+</a-scene>
+
+<!-- VR Start/Stop Button -->
+<button class="vr-toggle-btn" id="vr-toggle">Enter VR</button>
+
+<!-- Video Start/Stop Button -->
+<button class="video-toggle-btn" id="video-toggle">Play Pause Video</button>
+
+<!-- Message when in VR mode -->
+<div class="vr-message" id="vr-message">You are in VR mode. Use a VR headset for the best experience.</div>
+
+<script>
+    const vrButton = document.getElementById('vr-toggle');
+    const vrMessage = document.getElementById('vr-message');
+    const vrScene = document.getElementById('vr-scene');
+    const videoToggleButton = document.getElementById('video-toggle');
+    const videoElement = document.getElementById('my-video');
+
+    // Toggle VR mode functionality
+    vrButton.addEventListener('click', () => {
+        const isInVRMode = vrScene.is('vr-mode');
+        
+        if (isInVRMode) {
+            // Exit VR mode
+            vrScene.exitVR();
+            vrButton.innerText = 'Enter VR';
+            vrMessage.style.display = 'none';
+        } else {
+            // Enter VR mode
+            vrScene.enterVR();
+            vrButton.innerText = 'Exit VR';
+            vrMessage.style.display = 'block';
+        }
+    });
+
+    // Toggle video start/stop functionality
+    videoToggleButton.addEventListener('click', () => {
+        if (videoElement.paused) {
+            videoElement.play();
+            videoToggleButton.innerText = 'Stop Video';
+        } else {
+            videoElement.pause();
+            videoToggleButton.innerText = 'Start Video';
+        }
+    });
+</script>
+
+</body>
+</html>
